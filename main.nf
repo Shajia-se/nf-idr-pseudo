@@ -39,15 +39,6 @@ process idr_call {
   """
 }
 
-//
-// 🔹 新增：一个「从 BAM 直接做到 pseudo-IDR」的一体化 process
-// 输入：rep_name（例如 sample1_rep1）、该 replicate 的 BAM
-// 步骤：
-//   1) samtools 随机抽样生成两个 pseudo BAM
-//   2) 对两个 pseudo BAM 各跑一次 MACS3
-//   3) 用这两个 pseudo peaks 做 IDR
-// 输出：<rep_name>_pseudo_idr.*
-//
 process pseudo_idr_from_bam {
   tag "${rep_name}"
   stageInMode 'symlink'
@@ -76,7 +67,7 @@ process pseudo_idr_from_bam {
   samtools index ${rep_name}.pseudo1.bam
   samtools index ${rep_name}.pseudo2.bam
 
-  macs3 callpeak \\
+  macs2 callpeak \\
     -t ${rep_name}.pseudo1.bam \\
     -n ${rep_name}_pseudo1 \\
     -f BAM \\
@@ -85,7 +76,7 @@ process pseudo_idr_from_bam {
     --keep-dup all \\
     -q 0.01
 
-  macs3 callpeak \\
+  macs2 callpeak \\
     -t ${rep_name}.pseudo2.bam \\
     -n ${rep_name}_pseudo2 \\
     -f BAM \\
